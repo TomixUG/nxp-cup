@@ -1,5 +1,4 @@
-#ifndef SHIELD_H_
-#define SHIELD_H_
+#pragma once
 
 class Shield
 {
@@ -23,6 +22,4 @@ public:
     bool getSw2();
     bool getSw3();
     bool getSw4();
-}; 
-
-#endif
+};
