@@ -5,23 +5,20 @@ Serial pc(USBTX, USBRX);
 
 Shield shield;
 
-
 int main()
 {
   pc.printf("Started!\r\n");
   shield.init();
 
-  /* button test */
-  // while(1)
-  // {
-  //   pc.printf("A: %d | B: %d | 1: %d | 2: %d | 3: %d | 4: %d\r\n", shield.getSwA(),shield.getSwB(),shield.getSw1(),shield.getSw2(),shield.getSw3(),shield.getSw4());
-  //   wait(0.5);
+  /* camera test /*
+  // while(true) {       
+  //   int * val = shield.getCamData();            
+  //   printf("Val: %zu\r\n", val[50]);
+  //   wait(0.2);
   // }
 
-
-
   /* motor test */
-  // float position = 0.5;
+  // float position = 10;
   //   while(1) {                   
   //       switch(pc.getc()) {
   //           case '1': position = 100; break;
@@ -32,6 +29,7 @@ int main()
   //       }
   //       pc.printf("%g\r\n", position);
   //       shield.setMotors(position,position);
+  //       // printf("%g \r\n", VBAT.read());
   //       // shield.setServo(position);
   //   }
 }
