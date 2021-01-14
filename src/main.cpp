@@ -10,7 +10,7 @@ int main()
   pc.printf("Started!\r\n");
   shield.init();
 
-  /* camera test /*
+  /* camera test */
   // while(true) {       
   //   int * val = shield.getCamData();            
   //   printf("Val: %zu\r\n", val[50]);
