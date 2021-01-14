@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "tuple": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "new": "cpp",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "functional": "cpp",
+        "memory": "cpp",
+        "fstream": "cpp",
+        "istream": "cpp",
+        "limits": "cpp",
+        "mutex": "cpp",
+        "ostream": "cpp",
+        "numeric": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "thread": "cpp",
+        "utility": "cpp"
+    },
+    "editor.formatOnSave": false
+}
