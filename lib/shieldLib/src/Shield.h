@@ -9,6 +9,11 @@ public:
     void setServo(float input);
     void setMotors(float pwrL, float pwrR);
 
+    void setD1(bool on);
+    void setD2(bool on);
+    void setD3(bool on);
+    void setD4(bool on);
+
     float getPot1();
     float getPot2();
 

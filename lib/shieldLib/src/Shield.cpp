@@ -11,6 +11,11 @@ PwmOut MA2 (PTC2);
 PwmOut MB2 (PTC4); 
 DigitalIn M_ERR (PTD3);
 DigitalOut M_EN (PTD2); 
+//leds
+DigitalOut d1(PTC8);
+DigitalOut d2(PTC9);
+DigitalOut d3(PTC10);
+DigitalOut d4(PTC11);
 //pots
 AnalogIn pot1(PTB11); 
 AnalogIn pot2(PTB10); 
@@ -63,11 +68,27 @@ void Shield::setMotors(float pwrL, float pwrR)
     else { MB1 = 0; MB2 = 0; }
 }
 
+void Shield::setD1(bool on)
+{
+    d1 = on;
+}
+void Shield::setD2(bool on)
+{
+    d2 = on;
+}
+void Shield::setD3(bool on)
+{
+    d3 = on;
+}
+void Shield::setD4(bool on)
+{
+    d4 = on;
+}
+
 float Shield::getPot1()
 {
     return pot1.read();
 }
-
 float Shield::getPot2()
 {
     return pot2.read();
