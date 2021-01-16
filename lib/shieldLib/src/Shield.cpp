@@ -2,9 +2,11 @@
 #include "Shield.h"
 
 #include "TSL1401CL.h"
+
 //servo
 #include "Servo.h"
 Servo myservo(PTD0);
+
 //cam
 TSL1401CL cam (PTC7, PTC5, PTC0);
 //motors
@@ -41,7 +43,7 @@ void Shield::init()
     } 
     //motors
     M_EN = 1;
-    MA1.period_us(1000);  MB1.period_us(1000);  MA2.period_us(1000);  MB2.period_us(1000); 
+    // MA1.period_us(1000);  MB1.period_us(1000);  MA2.period_us(1000);  MB2.period_us(1000); 
 }
 
 int * Shield::getCamData()
@@ -63,6 +65,7 @@ void Shield::setServo(float input)
   printf("Calculated result: %g\r\n", result);
   myservo = result;
 }
+
 
 void Shield::setMotors(float pwrL, float pwrR)
 {
