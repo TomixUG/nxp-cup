@@ -5,11 +5,13 @@ Serial pc(USBTX, USBRX);
 
 Shield shield;
 
+float speed = 22.5;
+
 int main()
 {
   pc.printf("Started!\r\n");
   shield.init();
-  shield.setMotors(15,15);
+  shield.setMotors(speed,speed);
 
   while (1)
   {
@@ -27,11 +29,23 @@ int main()
       }
     }
 
-    float resultM = (index*3.125)-200; //TODO: fix this junk math
-    shield.setServo(-resultM);
+    float resultM = -((index*3.125)-200); //TODO: fix this junk math
+    shield.setServo(resultM);
+
+    //speed adjustment Works well
+    float speedConst = 0.006;
+    float speedSl = speed*(1 - (speedConst*abs(resultM)));
+
+    //right, left speed adujustment TODO: check if works well
+    float speedTurnConst = 0.004;
+    float speedTurnSDR = speedSl*(1 - (speedTurnConst*resultM));
+    float speedTurnSDL = speedSl*(1 + (speedTurnConst*resultM));
+
+    shield.setMotors(speedTurnSDR,speedTurnSDL);
+
     printf("%d | %d | %g \r\n", result, index, resultM);
 
-    wait(0.01);
+    // wait(0.01);
   }
 
   /* browser viewer */
