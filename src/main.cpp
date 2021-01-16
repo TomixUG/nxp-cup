@@ -34,10 +34,7 @@ int main()
     wait(0.01);
   }
 
-
-}
-
-/* browser viewer */
+  /* browser viewer */
 // while(1) {
 //     switch(pc.getc()) {
 //         case '1': break;
@@ -73,3 +70,5 @@ int main()
 //       // printf("%g \r\n", VBAT.read());
 //       // shield.setServo(position);
 //   }
+}
+
