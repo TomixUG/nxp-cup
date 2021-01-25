@@ -1,88 +1,142 @@
 #include "mbed.h"
 #include "Shield.h"
 
+#include <vector>
+#include <list>
+
 Serial pc(USBTX, USBRX);
 
 Shield shield;
 
 float speed = 22.5;
 
+
+bool Contains(const list<int> &list, int x) //to check if list contains x
+{
+	return find(list.begin(), list.end(), x) != list.end();
+}
+
 int main()
 {
   pc.printf("Started!\r\n");
   shield.init();
-  shield.setMotors(speed,speed);
+  // shield.setMotors(speed,speed);  //not used, because I don't have the road f
 
   while (1)
   {
     int *val = shield.getCamData();
 
-    int result = val[0];
-    int index;
-
-    for (int i = 32; i < 96; ++i) //using only from 32nd to 96th pixel, makes less mistakes
+    //find the differences
+    int highest[127];
+    for (int i = 1; i < 127; ++i) 
     {
-      if (result > val[i])
+      highest[i] = abs(val[i] - val[i + 1]);
+    }
+
+    //calculate avarage
+    int avarage = 0;
+    for (int i = 1; i < 127; ++i)
+    {
+      avarage = (avarage + highest[i]);
+    }
+    avarage = (avarage / 127);
+
+    //find the biggest difference, indexA
+    int highA = highest[1];
+    int indexA = 0;
+    for(int i = 1; i < 127; i++)
+    {
+      if(highest[i] > highA)
       {
-        result = val[i];
-        index = i;
+        highA = highest[i];
+        indexA = i;
       }
     }
 
+    //find big difference near indexA TODO: remove, make it fixed value (it's probably useless)
+    list<int> ignore;
+    for(int i = -5; i < 6; i++)
+    {
+      int ignoredIndex = indexA + i;
+      if(highest[ignoredIndex] > avarage)
+      {
+        ignore.push_back(ignoredIndex);
+      }
+    }
+
+    //find the second biggest difference, indexB
+    int highB = highest[1];
+    int indexB = 0;
+    for(int i = 1; i < 127; i++)
+    {
+      if(highest[i] > highB && Contains(ignore, i) == false)
+      {
+        highB = highest[i];
+        indexB = i;
+      }
+    }
+
+    int index = (indexA + indexB)/2;
+
+    // printf("%d | %d | %d\r\n", indexA, indexB, ignore.size());
+    printf("%d\r\n", index);
+    // wait(0.3);
+
     float resultM = -((index*3.125)-200); //TODO: fix this junk math
     shield.setServo(resultM);
+    // printf("%g \r\n", resultM);
 
-    //speed adjustment Works well
-    float speedConst = 0.006;
-    float speedSl = speed*(1 - (speedConst*abs(resultM)));
+    //motors not used, because I don't have the road f
+    // //speed adjustment Works well
+    // float speedConst = 0.006;
+    // float speedSl = speed*(1 - (speedConst*abs(resultM)));
+    // //right, left speed adjustment TODO: check if works well
+    // float speedTurnConst = 0.004;
+    // float speedTurnSDR = speedSl*(1 - (speedTurnConst*resultM));
+    // float speedTurnSDL = speedSl*(1 + (speedTurnConst*resultM));
 
-    //right, left speed adujustment TODO: check if works well
-    float speedTurnConst = 0.004;
-    float speedTurnSDR = speedSl*(1 - (speedTurnConst*resultM));
-    float speedTurnSDL = speedSl*(1 + (speedTurnConst*resultM));
+    // shield.setMotors(speedTurnSDR,speedTurnSDL);
 
-    shield.setMotors(speedTurnSDR,speedTurnSDL);
+    // printf("%d | %d | %g \r\n", result, index, resultM);
 
-    printf("%d | %d | %g \r\n", result, index, resultM);
-
-    // wait(0.01);
+    // wait(0.5);
   }
 
+/*  ------------- tools -----------*/
   /* browser viewer */
-// while(1) {
-//     switch(pc.getc()) {
-//         case '1': break;
-//     }
+  // while(1) {
+  //     switch(pc.getc()) {
+  //         case '1': break;
+  //     }
 
-//     int * val = shield.getCamData();
-//     //%d int
-//     for (int i = 0; i < 127; i++) {
-//       printf("%d;", val[i]);
-//     }
-//     // printf("\r\n");
-// }
+  //     int * val = shield.getCamData();
+  //     //%d int
+  //     for (int i = 0; i < 127; i++) {
+  //       printf("%d;", val[i]);
+  //     }
+  //     // printf("\r\n");
+  // }
 
-/* camera test */
-// while(true) {
-//   int * val = shield.getCamData();
-//   printf("Val: %zu\r\n", val[50]);
-//   wait(0.2);
-// }
+  /* camera test */
+  // while(true) {
+  //   int * val = shield.getCamData();
+  //   printf("Val: %zu\r\n", val[50]);
+  //   wait(0.2);
+  // }
 
-/* motor test */
-// float position = 10;
-//   while(1) {
-//       switch(pc.getc()) {
-//           case '1': position = 100; break;
-//           case '2': position = 0; break;
-//           case '3': position = -100; break;
-//           case '8': position = position+5; break;
-//           case '9': position = position-5; break;
-//       }
-//       pc.printf("%g\r\n", position);
-//       shield.setMotors(position,position);
-//       // printf("%g \r\n", VBAT.read());
-//       // shield.setServo(position);
-//   }
+  /* motor test */
+  // float position = 10;
+  //   while(1) {
+  //       switch(pc.getc()) {
+  //           case '1': position = 100; break;
+  //           case '2': position = 0; break;
+  //           case '3': position = -100; break;
+  //           case '8': position = position+5; break;
+  //           case '9': position = position-5; break;
+  //       }
+  //       pc.printf("%g\r\n", position);
+  //       shield.setMotors(position,position);
+  //       // printf("%g \r\n", VBAT.read());
+  //       // shield.setServo(position);
+  //   }
 }
-
