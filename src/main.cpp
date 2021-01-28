@@ -31,13 +31,13 @@ int main()
       highest[i] = abs(val[i] - val[i + 1]);
     }
 
-    //calculate avarage
-    int avarage = 0;
-    for (int i = 1; i < 127; ++i)
-    {
-      avarage = (avarage + highest[i]);
-    }
-    avarage = (avarage / 127);
+    // //calculate avarage //not used
+    // int avarage = 0;
+    // for (int i = 1; i < 127; ++i)
+    // {
+    //   avarage = (avarage + highest[i]);
+    // }
+    // avarage = (avarage / 127);
 
     //find the biggest difference, indexA
     int highA = highest[1];
