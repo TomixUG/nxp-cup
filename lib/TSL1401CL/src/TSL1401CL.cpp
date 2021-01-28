@@ -95,7 +95,7 @@ uint32_t TSL1401CL::getOneData(uint8_t index)
 //added by TomixUG
 int * TSL1401CL::getData()
 {
-    read(); //for some reason needed when reading slowly TODO: fix
+    // read(); //for some reason needed when reading slowly TODO: fix
     read();
     return (int *) data;
 }

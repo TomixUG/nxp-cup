@@ -10,25 +10,23 @@ Shield shield;
 
 float speed = 22.5;
 
-
 bool Contains(const list<int> &list, int x) //to check if list contains x
 {
-	return find(list.begin(), list.end(), x) != list.end();
+  return find(list.begin(), list.end(), x) != list.end();
 }
 
 int main()
 {
   pc.printf("Started!\r\n");
   shield.init();
-  // shield.setMotors(speed,speed);  //not used, because I don't have the road f
-
+  
   while (1)
   {
     int *val = shield.getCamData();
 
     //find the differences
     int highest[127];
-    for (int i = 1; i < 127; ++i) 
+    for (int i = 1; i < 127; ++i)
     {
       highest[i] = abs(val[i] - val[i + 1]);
     }
@@ -44,65 +42,74 @@ int main()
     //find the biggest difference, indexA
     int highA = highest[1];
     int indexA = 0;
-    for(int i = 1; i < 127; i++)
+    for (int i = 1; i < 127; i++)
     {
-      if(highest[i] > highA)
+      if (highest[i] > highA)
       {
         highA = highest[i];
         indexA = i;
       }
     }
 
-    //find big difference near indexA TODO: remove, make it fixed value (it's probably useless)
+    //find big difference near indexA
     list<int> ignore;
-    for(int i = -5; i < 6; i++)
+    for (int i = -10; i < 11; i++)
     {
       int ignoredIndex = indexA + i;
-      if(highest[ignoredIndex] > avarage)
-      {
+      // if (highest[ignoredIndex] > avarage)
+      // {
         ignore.push_back(ignoredIndex);
-      }
+      // }
     }
 
     //find the second biggest difference, indexB
     int highB = highest[1];
     int indexB = 0;
-    for(int i = 1; i < 127; i++)
+    for (int i = 1; i < 127; i++)
     {
-      if(highest[i] > highB && Contains(ignore, i) == false)
+      if (highest[i] > highB && Contains(ignore, i) == false) //TODO: make the Contains check smarter
       {
         highB = highest[i];
         indexB = i;
       }
     }
 
-    int index = (indexA + indexB)/2;
+    int index = (indexA + indexB) / 2;
 
     // printf("%d | %d | %d\r\n", indexA, indexB, ignore.size());
     printf("%d\r\n", index);
     // wait(0.3);
 
-    float resultM = -((index*3.125)-200); //TODO: fix this junk math
+    float resultM = -((index * 3.125) - 200); //TODO: fix this junk math
     shield.setServo(resultM);
     // printf("%g \r\n", resultM);
 
-    //motors not used, because I don't have the road f
-    // //speed adjustment Works well
-    // float speedConst = 0.006;
-    // float speedSl = speed*(1 - (speedConst*abs(resultM)));
-    // //right, left speed adjustment TODO: check if works well
-    // float speedTurnConst = 0.004;
-    // float speedTurnSDR = speedSl*(1 - (speedTurnConst*resultM));
-    // float speedTurnSDL = speedSl*(1 + (speedTurnConst*resultM));
+    //MOTORS
+    if (shield.getSw1() == true)
+    {
+      //speed adjustment Works well
+      float speedConst = 0.006;
+      float speedSl = speed * (1 - (speedConst * abs(resultM)));
+      //right, left speed adjustment
+      float speedTurnConst = 0.004;
+      float speedTurnSDR = speedSl * (1 - (speedTurnConst * resultM));
+      float speedTurnSDL = speedSl * (1 + (speedTurnConst * resultM));
 
-    // shield.setMotors(speedTurnSDR,speedTurnSDL);
-
-    // printf("%d | %d | %g \r\n", result, index, resultM);
-
-    // wait(0.5);
+      shield.setMotors(speedTurnSDR, speedTurnSDL);
+    }
+    else 
+    {
+      shield.setMotors(0,0);
+    }
+    //EMERGENCY SHUTDOWN
+    if(shield.getSwA() == true)
+    {
+      shield.setMotors(0,0);
+      break;
+    }
   }
 
-/*  ------------- tools -----------*/
+  /*  ------------- tools -----------*/
   /* browser viewer */
   // while(1) {
   //     switch(pc.getc()) {
