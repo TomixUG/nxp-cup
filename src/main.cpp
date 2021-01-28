@@ -1,7 +1,6 @@
 #include "mbed.h"
 #include "Shield.h"
 
-#include <vector>
 #include <list>
 
 Serial pc(USBTX, USBRX);
