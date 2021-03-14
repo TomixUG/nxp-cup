@@ -62,7 +62,7 @@ void Shield::setServo(float input)
 
   float result = (input + 357.1428572) / 714.2857143;
 
-  printf("Calculated result: %g\r\n", result);
+//   printf("Calculated result: %g\r\n", result);
   myservo = result;
 }
 
