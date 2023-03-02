@@ -19,5 +19,4 @@
         "thread": "cpp",
         "utility": "cpp"
     },
-    "editor.formatOnSave": false
 }

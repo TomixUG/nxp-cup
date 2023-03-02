@@ -3,33 +3,31 @@
 
 #include <list>
 
-Serial pc(USBTX, USBRX);
-
 Shield shield;
 
-float speed = 23;
-//obstace detection
+float speed = 8;
+// obstace detection
 list<int> lastIndexes;
 int times = 0;
 
-bool Contains(const list<int> &list, int x) //to check if list contains x
+bool Contains(const list<int> &list, int x) // to check if list contains x
 {
   return find(list.begin(), list.end(), x) != list.end();
 }
 
 int main()
 {
-  pc.printf("Started!\r\n");
+  printf("Started!\r\n");
   shield.init();
 
-  if (shield.getSw2() == false)
+  if (shield.getSw1() == true)
   {
-    //normal
+    // normal
     while (1)
     {
       int *val = shield.getCamData();
 
-      //find the differences
+      // find the differences
       int highest[127];
       for (int i = 1; i < 127; ++i)
       {
@@ -44,7 +42,7 @@ int main()
       // }
       // avarage = (avarage / 127);
 
-      //find the biggest difference, indexA
+      // find the biggest difference, indexA
       int highA = highest[1];
       int indexA = 0;
       for (int i = 1; i < 127; i++)
@@ -56,7 +54,7 @@ int main()
         }
       }
 
-      //find big difference near indexA
+      // find big difference near indexA
       list<int> ignore;
       for (int i = -10; i < 11; i++)
       {
@@ -67,12 +65,12 @@ int main()
         // }
       }
 
-      //find the second biggest difference, indexB
+      // find the second biggest difference, indexB
       int highB = highest[1];
       int indexB = 0;
       for (int i = 1; i < 127; i++)
       {
-        if (highest[i] > highB && Contains(ignore, i) == false) //TODO: make the Contains check smarter
+        if (highest[i] > highB && Contains(ignore, i) == false) // TODO: make the Contains check smarter
         {
           highB = highest[i];
           indexB = i;
@@ -85,17 +83,17 @@ int main()
       printf("%d\r\n", index);
       // wait(0.3);
 
-      float resultM = -((index * 3.125) - 200); //TODO: fix this junk math
+      float resultM = -((index * 3.125) - 200); // TODO: fix this junk math
       shield.setServo(resultM);
       // printf("%g \r\n", resultM);
 
-      //MOTORS
-      if (shield.getSw1() == true)
+      // MOTORS
+      if (shield.getSw4() == true)
       {
-        //speed adjustment Works well
+        // speed adjustment Works well
         float speedConst = 0.006;
         float speedSl = speed * (1 - (speedConst * abs(resultM)));
-        //right, left speed adjustment
+        // right, left speed adjustment
         float speedTurnConst = 0.004;
         float speedTurnSDR = speedSl * (1 - (speedTurnConst * resultM));
         float speedTurnSDL = speedSl * (1 + (speedTurnConst * resultM));
@@ -106,7 +104,7 @@ int main()
       {
         shield.setMotors(0, 0);
       }
-      //EMERGENCY SHUTDOWN
+      // EMERGENCY SHUTDOWN
       if (shield.getSwA() == true)
       {
         shield.setMotors(0, 0);
@@ -114,21 +112,21 @@ int main()
       }
     }
   }
-  else
+  else if (shield.getSw2() == true)
   {
-    //obstacle detection
+    // obstacle detection
     while (1)
     {
       int *val = shield.getCamData();
 
-      //find the differences
+      // find the differences
       int highest[127];
       for (int i = 1; i < 127; ++i)
       {
         highest[i] = abs(val[i] - val[i + 1]);
       }
 
-      //find the biggest difference, indexA
+      // find the biggest difference, indexA
       int highA = highest[1];
       int indexA = 0;
       for (int i = 1; i < 127; i++)
@@ -140,7 +138,7 @@ int main()
         }
       }
 
-      //find big difference near indexA
+      // find big difference near indexA
       list<int> ignore;
       for (int i = -10; i < 11; i++)
       {
@@ -148,12 +146,12 @@ int main()
         ignore.push_back(ignoredIndex);
       }
 
-      //find the second biggest difference, indexB
+      // find the second biggest difference, indexB
       int highB = highest[1];
       int indexB = 0;
       for (int i = 1; i < 127; i++)
       {
-        if (highest[i] > highB && Contains(ignore, i) == false) //TODO: make the Contains check smarter
+        if (highest[i] > highB && Contains(ignore, i) == false) // TODO: make the Contains check smarter
         {
           highB = highest[i];
           indexB = i;
@@ -161,7 +159,7 @@ int main()
       }
 
       int index = (indexA + indexB) / 2;
-      //fill the list with data first
+      // fill the list with data first
       if (times != 10)
       {
         times++;
@@ -169,11 +167,11 @@ int main()
         continue;
       }
 
-      lastIndexes.push_back(index); //add new index
-      lastIndexes.pop_front(); //remove last index
+      lastIndexes.push_back(index); // add new index
+      lastIndexes.pop_front();      // remove last index
 
       printf("[Index] %d\r\n", index);
-      int howManyTimes = 0;// float speed2 = 20;
+      int howManyTimes = 0; // float speed2 = 20;
       for (int indexO : lastIndexes)
       {
         if (abs(indexO - index) > 12)
@@ -183,10 +181,11 @@ int main()
       printf("[howManyTimes] %d\r\n", howManyTimes);
       if (howManyTimes > 8)
       {
+        // obstace detected
         printf("YES! \r\n");
         shield.setD1(true);
-        shield.setMotors(0, 0);
-        wait(1);
+        shield.setServo(-100);
+        thread_sleep_for(0.7);
         shield.setD1(false);
         times = 0;
         lastIndexes.clear();
@@ -197,17 +196,17 @@ int main()
       // printf("%d\r\n", index);
       // wait(0.3);
 
-      float resultM = -((index * 3.125) - 200); //TODO: fix this junk math
+      float resultM = -((index * 3.125) - 200); // TODO: fix this junk math
       shield.setServo(resultM);
       // printf("%g \r\n", resultM);
 
-      //MOTORS
-      if (shield.getSw1() == true)
+      // MOTORS
+      if (shield.getSw4() == true)
       {
-        //speed adjustment Works well
+        // speed adjustment Works well
         float speedConst = 0.006;
         float speedSl = speed * (1 - (speedConst * abs(resultM)));
-        //right, left speed adjustment
+        // right, left speed adjustment
         float speedTurnConst = 0.004;
         float speedTurnSDR = speedSl * (1 - (speedTurnConst * resultM));
         float speedTurnSDL = speedSl * (1 + (speedTurnConst * resultM));
@@ -218,7 +217,7 @@ int main()
       {
         shield.setMotors(0, 0);
       }
-      //EMERGENCY SHUTDOWN
+      // EMERGENCY SHUTDOWN
       if (shield.getSwA() == true)
       {
         shield.setMotors(0, 0);
@@ -226,7 +225,41 @@ int main()
       }
     }
   }
+  else if (shield.getSw3() == true)
+  {
+    while (1)
+    {
+      // just run the motors, basically nothing
+      if (shield.getSw4() == true)
+      {
+        // shield.setMotors(2, 2);
 
+        int index = 50;
+
+        float resultM = -((index * 3.125) - 200); // TODO: fix this junk math
+
+        float speedConst = 0.006;
+        float speedSl = speed * (1 - (speedConst * abs(resultM)));
+        // right, left speed adjustment
+        float speedTurnConst = 0.004;
+        float speedTurnSDR = speedSl * (1 - (speedTurnConst * resultM));
+        float speedTurnSDL = speedSl * (1 + (speedTurnConst * resultM));
+
+        shield.setMotors(speedTurnSDR, speedTurnSDL);
+      }
+      else
+      {
+        shield.setMotors(0, 0);
+      }
+
+      // EMERGENCY SHUTDOWN
+      if (shield.getSwA() == true)
+      {
+        shield.setMotors(0, 0);
+        break;
+      }
+    }
+  }
   /*  ------------- tools -----------*/
   /* browser viewer */
   // while(1) {
